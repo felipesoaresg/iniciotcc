@@ -1,0 +1,41 @@
+const Sequelize = require('sequelize');
+async function connect(){
+    if (global.connection && global.connection.state !== 'disconnected')
+        return global.connection;
+    
+
+    const mysql = require("mysql2/promise");
+    const connection = await mysql.createConnection("mysql://root:usbw@localhost:3307/lanchonete");
+
+    console.log("conectado");
+    global.connection = connection;
+    return connection;
+
+}
+
+async function selectClientes(){
+    const conn = await connect();
+    const [rows] = await conn.query('SELECT * FROM Clientes;');
+    return rows;
+}
+
+async function Clientes(cliente){
+    const conn = await connect();
+    const sql = 'INSERT INTO CLIENTES(nomeCliente, mesa) VALUES (?,?);';
+    const values = [cliente.nomeCliente, cliente.mesa];
+    return await conn.query(sql, values);
+}
+
+module.exports = {selectClientes, Clientes}
+
+
+INDEX
+(async () => {
+    const db = require("./database");
+    console.log('Começou!');
+
+    console.log('INSERT INTO Clientes');
+    const result = await db.Clientes({NomeCliente: "Beyonce", mesa: 4});
+    console.log(result);
+
+}) ();
